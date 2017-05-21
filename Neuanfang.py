@@ -1,5 +1,5 @@
 #Ich fange nochmal an mit Python ;)
-y=["Python","Java","SQL"]
+import Module1
 x=1
 # while x<=13:
 	# print("x ist kleiner als 13")
@@ -13,8 +13,10 @@ x=1
 	# if x==20:
 		# break
 # print("Hello World")
-for Sprache in y:
-	print(Sprache)
-	if Sprache == "Java":
-		break
-print("Fertig")
+if __name__ == "__main__":
+	y=["Python","Java","SQL"]
+	for Sprache in y:
+		print(Sprache)
+		if Sprache == "Java":
+			break
+	print("Fertig")
