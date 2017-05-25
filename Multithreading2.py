@@ -15,6 +15,7 @@ class Aufgaben():
 	fibzahl = int(input("Fibonaccizahl eingeben: "))
 	von = int(input("Erstelle Liste von "))
 	bis = int(input("bis "))+1
+	filter = int(input("Liste teilen durch: "))
 
 	def Liste_erzeugen():
 		for x in range(Aufgaben.von, Aufgaben.bis):
@@ -25,7 +26,7 @@ class Aufgaben():
 		print(Var.NeueListe)
 
 	def Liste_sortieren(x):
-		if x%2==0:
+		if x% Aufgaben.filter==0:
 			Var.NeueListe.append(x)
 	
 	def Liste_filtern():
@@ -62,9 +63,9 @@ Thread3.join()
 # print("Die Fibonaccizahl von", Aufgaben.fibzahl, "ist ", Var.Fib[Aufgaben.fibzahl])
 print("Die Fibonaccizahl von " + str(Aufgaben.fibzahl) + " ist " + str(Var.Fib[Aufgaben.fibzahl]))
 # print("Zahlen, von", Aufgaben.von, "bis", Aufgaben.bis, ",die durch 2 Teilbar sind: ", Var.NeueListe)
-print("\nZahlen, von " + str(Aufgaben.von) + " bis " + str(Aufgaben.bis) + ", die durch 2 Teilbar sind:\n " + str(Var.NeueListe))
+print("\nZahlen, von " + str(Aufgaben.von) + " bis " + str(Aufgaben.bis - 1) + ", die durch " + str(Aufgaben.filter) + " Teilbar sind:\n" + str(Var.NeueListe))
 Data1 = "Die Fibonaccizahl von " + str(Aufgaben.fibzahl) + " ist " + str(Var.Fib[Aufgaben.fibzahl])
-Data2 = "\nZahlen, von " + str(Aufgaben.von) + " bis " + str(Aufgaben.bis) + ", die durch 2 Teilbar sind:\n " + str(Var.NeueListe)
+Data2 = "\nZahlen, von " + str(Aufgaben.von) + " bis " + str(Aufgaben.bis - 1) + ", die durch " + str(Aufgaben.filter) + " Teilbar sind:\n" + str(Var.NeueListe)
 Datainput = Data1 + Data2
 while True:
 	Speichern = str(input("Speichern? (Ja/Nein): "))
