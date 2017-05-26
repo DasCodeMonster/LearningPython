@@ -1,5 +1,7 @@
 import threading
 import time
+import tkinter as tk
+
 
 class Thread(threading.Thread):
 	def __init__(self, Id, Aufgabe):
@@ -8,78 +10,98 @@ class Thread(threading.Thread):
 		self.Aufgabe = Aufgabe
 
 	def run(self):
-		print("Thread",self.Id, "ist da")
+		print("Thread", self.Id, "ist da")
 		self.Aufgabe()
 
-class Aufgaben():
-	fibzahl = int(input("Fibonaccizahl eingeben: "))
-	von = int(input("Erstelle Liste von "))
-	bis = int(input("bis "))+1
-	filter = int(input("Liste teilen durch: "))
 
+class Aufgaben():
 	def Liste_erzeugen():
-		for x in range(Aufgaben.von, Aufgaben.bis):
+		for x in range(von, bis):
 			t = threading.Thread(target=Aufgaben.Liste_sortieren, args=(x,))
-			Var.Liste.append(x)
+			Liste.append(x)
 			t.start()
-		print(Var.Liste)
-		print(Var.NeueListe)
+		print(Liste)
+		print(NeueListe)
 
 	def Liste_sortieren(x):
-		if x% Aufgaben.filter==0:
-			Var.NeueListe.append(x)
-	
+		if x % teilen == 0:
+			NeueListe.append(x)
+
 	def Liste_filtern():
 		pass
 
 	def fib():
 		i = 0
-		while i < Aufgaben.fibzahl + 1:
-			Var.lock.acquire()
-			zahl = Var.Fib[len(Var.Fib)-2] + Var.Fib[len(Var.Fib)-1]
-			Var.Fib.append(zahl)
-			Var.lock.release()
-			i = i+1
+		while i < fibzahl + 1:
+			lock.acquire()
+			zahl = Fib[len(Fib) - 2] + Fib[len(Fib) - 1]
+			Fib.append(zahl)
+			lock.release()
+			i = i + 1
 		print("Thread 3 ist Fertig")
 
-class Var():
-	Liste = []
-	NeueListe = []
-	Fib = [0,1]
-	lock = threading.Lock()
-	thread1finish = False
-	thread2finish = False
-	thread3finish = False
-	
-Thread1 = Thread(1, Aufgaben.Liste_erzeugen)
-# Thread2 = Thread(2, Aufgaben.Liste_sortieren2)
-Thread3 = Thread(3, Aufgaben.fib)
-Thread3.start()
-# Thread2.start() #Thread1 und Thread2 tauschen!
-Thread1.start()
-Thread1.join()
-# Thread2.join()
-Thread3.join()
-# print("Die Fibonaccizahl von", Aufgaben.fibzahl, "ist ", Var.Fib[Aufgaben.fibzahl])
-print("Die Fibonaccizahl von " + str(Aufgaben.fibzahl) + " ist " + str(Var.Fib[Aufgaben.fibzahl]))
-# print("Zahlen, von", Aufgaben.von, "bis", Aufgaben.bis, ",die durch 2 Teilbar sind: ", Var.NeueListe)
-print("\nZahlen, von " + str(Aufgaben.von) + " bis " + str(Aufgaben.bis - 1) + ", die durch " + str(Aufgaben.filter) + " Teilbar sind:\n" + str(Var.NeueListe))
-Data1 = "Die Fibonaccizahl von " + str(Aufgaben.fibzahl) + " ist " + str(Var.Fib[Aufgaben.fibzahl])
-Data2 = "\nZahlen, von " + str(Aufgaben.von) + " bis " + str(Aufgaben.bis - 1) + ", die durch " + str(Aufgaben.filter) + " Teilbar sind:\n" + str(Var.NeueListe)
-Datainput = Data1 + Data2
-while True:
-	Speichern = str(input("Speichern? (Ja/Nein): "))
-	if Speichern == "Ja":
-		fopen = open(str(input("Dateiname: ")+ ".txt"), "w")
-		fopen.write(Datainput)
-		print("Goodbye\nExit...")
-		break
-	elif Speichern == "Nein":
-		print("Goodbye\nExit...")
-		break
-	else:
-		print("Ungültig\nNochmal...")
-		continue
-	
-# print(Var.Liste)
-# print(Var.NeueListe)
+	def GUI():
+		root = tk.Tk()
+		w = tk.Label(root, text = NeueListe)
+		w.pack()
+		root.mainloop()
+
+if __name__ == "__main__":
+	while True:
+		Liste = []
+		NeueListe = []
+		Fib = [0, 1]
+		lock = threading.Lock()
+		thread1finish = False
+		thread2finish = False
+		thread3finish = False
+
+		while True:
+			try:
+				fibzahl = int(input("Fibonaccizahl eingeben: "))
+				von = int(input("Erstelle Liste von "))
+				bis = int(input("bis ")) + 1
+				teilen = int(input("Liste teilen durch: "))
+				break
+			except:
+				print("Eingaben dürfen jeweils nur eine Zahl beinhalten!")
+
+		Thread1 = Thread(1, Aufgaben.Liste_erzeugen)
+		# Thread2 = Thread(2, Aufgaben.Liste_sortieren2)
+		Thread3 = Thread(3, Aufgaben.fib)
+		Thread3.start()
+		# Thread2.start() #Thread1 und Thread2 tauschen!
+		Thread1.start()
+		Thread1.join()
+		# Thread2.join()
+		Thread3.join()
+		ThreadGUI = Thread(4, Aufgaben.GUI())
+
+		print("Die Fibonaccizahl von " + str(fibzahl) + " ist " + str(Fib[fibzahl]))
+		print("\nZahlen, von " + str(von) + " bis " + str(bis - 1) + ", die durch " + str(teilen) + " Teilbar sind:\n" + str(NeueListe))
+
+		Data1 = "Die Fibonaccizahl von " + str(fibzahl) + " ist " + str(Fib[fibzahl])
+		Data2 = "\nZahlen, von " + str(von) + " bis " + str(bis - 1) + ", die durch " + str(teilen) + " Teilbar sind:\n" + str(NeueListe)
+		Datainput = Data1 + Data2
+
+		while True:
+			Speichern = str(input("Speichern? (Ja/Nein): "))
+			if Speichern == "Ja" or Speichern == "ja" or Speichern == "Yes" or Speichern == "yes" or Speichern == "Y" or Speichern == "y" or Speichern == "J" or Speichern == "j":
+				fopen = open(str(input("Dateiname: ") + ".txt"), "w")
+				fopen.write(Datainput)
+				break
+
+			elif Speichern == "Nein" or Speichern == "nein" or Speichern == "No" or Speichern == "no" or Speichern == "Nu" or Speichern == "nu" or Speichern == "N" or Speichern == "n" or Speichern == "Nay" or Speichern == "nay":
+				break
+
+			else:
+				print("Ungültig\nNochmal...")
+				continue
+
+		nochmal = input("Neue Berechung? (Ja/Nein): ")
+		if nochmal == "Ja" or nochmal == "ja" or nochmal == "J" or nochmal == "j" or nochmal == "Yes" or nochmal == "yes" or nochmal == "Y" or nochmal == "y":
+			continue
+
+		if nochmal == "Nein" or nochmal == "nein" or nochmal == "No" or nochmal == "no" or nochmal == "Nu" or nochmal == "nu" or nochmal == "N" or nochmal == "n" or nochmal == "Nay" or nochmal == "nay":
+			print("Goodbye\nExit...")
+			break
