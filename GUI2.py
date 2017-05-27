@@ -8,7 +8,8 @@ class Fenster:
 		Schrift.pack()
 		self.button = Button(root, text="Quit", fg="red", command=root.quit)
 		self.button.pack()
-		
+		root.mainloop()
+
 class Fenster2:
 	def __init__(self, klasse):
 		window.title("Fenster: Window")
@@ -17,10 +18,11 @@ class Fenster2:
 		Schrift.pack()
 		self.button = Button(window, text="Quit", fg="red", command=window.quit)
 		self.button.pack()
-
+		window.mainloop()
 root = Tk()
 RootFenster = Fenster(root)
-root.mainloop()
+# root.mainloop()
 window = Tk()
 WindowFenster = Fenster2(window)
-window.mainloop()
+tk_chooseDirectory()
+# window.mainloop()
