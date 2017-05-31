@@ -1,5 +1,5 @@
 import threading
-import time
+import MultithreadingGUI
 import tkinter as tk
 
 
@@ -58,10 +58,15 @@ if __name__ == "__main__":
 
 		while True:
 			try:
-				fibzahl = int(input("Fibonaccizahl eingeben: "))
-				von = int(input("Erstelle Liste von "))
-				bis = int(input("bis ")) + 1
-				teilen = int(input("Liste teilen durch: "))
+				MultithreadingGUI()
+				# fibzahl = int(input("Fibonaccizahl eingeben: "))
+				fibzahl = int(MultithreadingGUI.e1.get())
+				# von = int(input("Erstelle Liste von "))
+				von = int(MultithreadingGUI.e2.get())
+				# bis = int(input("bis ")) + 1
+				bis = int(MultithreadingGUI.e3.get())
+				# teilen = int(input("Liste teilen durch: "))
+				teilen = int(MultithreadingGUI.e4.get())
 				break
 			except:
 				print("Eingaben dürfen jeweils nur eine Zahl beinhalten!")
