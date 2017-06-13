@@ -14,12 +14,6 @@ vardirectory = None
 l1 = None
 e1 = None
 e2 = None
-deutsch = None
-english = None
-rd = []
-re = []
-rda = []
-rea = []
 
 
 def ask_window():
@@ -42,33 +36,10 @@ def askdir(ask, event=None):
         chosen = True
     print(chosen)
     ask.destroy()
-    init_liste()
-
-
-def init_liste():
-    fd = open(directory + "\\Deutsch.txt", "r")
-    global rd
-    global rda
-    rda = []
-    rd = []
-    for line in fd:
-        rd.append(line.rstrip())
-        rda.append(line.rstrip())
-    fe = open(directory + "\\English.txt", "r")
-    global re
-    global rea
-    re = []
-    rea = []
-    for line in fe:
-        re.append(line.rstrip())
-        rea.append(line.rstrip())
-    fd.close()
-    fe.close()
 
 
 def app():
     root = tk.Tk()
-    root.focus_force()
     root.title("Vokabeltrainer")
     menu = tk.Menu(root)
     root.config(menu=menu)
@@ -86,13 +57,10 @@ def app():
     tk.Label(root, text="Deutsch:").grid(row=2, column=0, sticky="e", padx=5, pady=3)
     global e1
     global e2
-    e1 = tk.Entry(root)
-    e2 = tk.Entry(root)
-    e1.bind("<Return>", partial(next_box, e2))
+    e1 = tk.Entry(root, state="normal")
     e1.grid(row=2, column=1, sticky="w", padx=5, pady=3)
-    e1.focus()
     tk.Label(root, text="English:").grid(row=3, column=0, sticky="e", padx=5, pady=3)
-    e2.bind("<Return>", partial(savevoc, root))
+    e2 = tk.Entry(root)
     e2.grid(row=3, column=1, sticky="w", padx=5, pady=3)
     b1 = tk.Button(root, text="Save Voc.", command=partial(savevoc, root))
     b1.bind("<Return>", partial(savevoc, root))
@@ -111,9 +79,6 @@ def app():
     root.mainloop()
 
 
-def next_box(e2, event=None):
-    e2.focus()
-
 def change_directory(root, event=None):
     global l1
     l1.destroy()
@@ -125,7 +90,6 @@ def change_directory(root, event=None):
     print(tempdirectory)
     l1 = tk.Label(root, text="Directory: " + directory)
     l1.grid(row=0, column=0, columnspan=2, sticky="w", padx=5, pady=3)
-    init_liste()
 
     # root.update()
 
@@ -168,10 +132,6 @@ def savevoc(root, event=None):
         print("Saved english Voc")
     efile.close()
     dfile.close()
-    init_liste()
-    e1.delete(0, "end")
-    e2.delete(0, "end")
-    e1.focus()
 
 
 def random_abfrage(root, event=None):
@@ -184,14 +144,22 @@ def random_abfrage(root, event=None):
     root.update()
     x = random.randint(1, 2)
     print(x)
-    global rd
     deutsch = tk.StringVar()
+    fd = open(directory + "\\Deutsch.txt", "r")
+    rd = []
+    for line in fd:
+        rd.append(line.rstrip())
     xd = random.randint(0, len(rd) - 1)
     deutsch.set(rd[xd])
-    global re
     english = tk.StringVar()
+    fe = open(directory + "\\English.txt", "r")
+    re = []
+    for line in fe:
+        re.append(line.rstrip())
     xe = random.randint(0, len(re) - 1)
     english.set(re[xe])
+    fd.close()
+    fe.close()
     abfragel4 = tk.Label(root, textvariable=deutsch)
     abfragel5 = tk.Label(root, textvariable=english)
     global correct_answer
@@ -199,11 +167,11 @@ def random_abfrage(root, event=None):
     abfragel6 = tk.Label(root, textvariable=correct_answer)
     evoc = tk.Entry(root)
     evoc.bind("<Return>",
-              partial(compare_evoc, evoc, xd, root, abfragel1, abfragel2, abfragel3, abfragel4, abfragel5,
+              partial(compare_evoc, evoc, re, xd, root, abfragel1, abfragel2, abfragel3, abfragel4, abfragel5,
                       abfragel6))
     dvoc = tk.Entry(root)
     dvoc.bind("<Return>",
-              partial(compare_dvoc, dvoc, xe, root, abfragel1, abfragel2, abfragel3, abfragel4, abfragel5,
+              partial(compare_dvoc, dvoc, rd, xe, root, abfragel1, abfragel2, abfragel3, abfragel4, abfragel5,
                       abfragel6))
     global b3
     b3.destroy()
@@ -215,29 +183,19 @@ def random_abfrage(root, event=None):
     if x == 1:
         abfragel4.grid(row=9, column=0, sticky="w", padx=5, pady=3)
         evoc.grid(row=9, column=1, sticky="w", padx=5, pady=3)
-        evoc.focus()
     elif x == 2:
         abfragel5.grid(row=9, column=1, sticky="w", padx=5, pady=3)
         dvoc.grid(row=9, column=0, sticky="w", padx=5, pady=3)
-        dvoc.focus()
 
 
-def compare_evoc(evoc, xd, root, label1, label2, label3, label4, label5, label6,  event=None):
+def compare_evoc(evoc, rd, xe, root, label1, label2, label3, label4, label5, label6,  event=None):
     global correct_answer
-    global re
-    # global rea
-    # if evoc.get() == rea[xd]
-    if evoc.get() == re[xd]:
+    if evoc.get() == rd[xe]:
         print("Correct!")
         correct_answer.set("Correct!")
-        # print(re)
-        # del re[xd]
-        # print(re)
-        # if re is []:
-        #     init_liste()
     else:
-        print("Wrong! The right answer was ", re[xd])
-        correct_answer.set("Wrong! The right answer was " + re[xd])
+        print("Wrong! The right answer was ", rd[xe])
+        correct_answer.set("Wrong! The right answer was " + rd[xe])
     label6.grid(row=10, column=0, columnspan=2, sticky="w", padx=5, pady=3)
     root.update()
     time.sleep(1.5)
@@ -251,22 +209,14 @@ def compare_evoc(evoc, xd, root, label1, label2, label3, label4, label5, label6,
     random_abfrage(root)
 
 
-def compare_dvoc(dvoc, xe, root, label1, label2, label3, label4, label5, label6, event=None):
+def compare_dvoc(dvoc, re, xd, root, label1, label2, label3, label4, label5, label6, event=None):
     global correct_answer
-    global rd
-    # global rda
-    # if dvoc.get() == rda[xe]
-    if dvoc.get() == rd[xe]:
+    if dvoc.get() == re[xd]:
         print("Correct!")
         correct_answer.set("Correct!")
-        # print(rd)
-        # del rd[xe]
-        # print(rd)
-        # if rd is []:
-        #     init_liste()
     else:
-        print("Wrong! The right answer was ", rd[xe])
-        correct_answer.set("Wrong the right answer was: " + rd[xe])
+        print("Wrong! The right answer was ", re[xd])
+        correct_answer.set("Wrong the right answer was: " + re[xd])
     label6.grid(row=10, column=0, columnspan=2, sticky="w", padx=5, pady=3)
     root.update()
     time.sleep(1.5)
