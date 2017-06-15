@@ -108,6 +108,9 @@ def app():
     b4 = tk.Button(root, text="Quit", command=partial(quit_window, root))
     b4.bind("<Return>", partial(quit_window, root))
     b4.grid(row=4, column=0, sticky="w", padx=5, pady=3)
+    b5 = tk.Button(root, text="Delete Entrys", command=partial(delete_entrys_window, root))
+    b5.bind("<Return>", partial(delete_entrys_window, root))
+    b5.grid(row=4, column=2, sticky="w", padx=5, pady=3)
     root.mainloop()
 
 
@@ -149,13 +152,13 @@ def savevoc(root, event=None):
     global e2
     if e1.get() == "":
         print("Darf nicht leer sein!")
-        e1.destroy()
-        e1 = tk.Entry(root)
+        # e1.destroy()
+        # e1 = tk.Entry(root)
         e1.insert(0, "Darf nicht leer sein!")
         e1.grid(row=2, column=1, sticky="w", padx=5, pady=3)
     if e2.get() == "":
-        e2.destroy()
-        e2 = tk.Entry(root)
+        # e2.destroy()
+        # e2 = tk.Entry(root)
         e2.insert(0, "Darf nicht leer sein!")
         e2.grid(row=3, column=1, sticky="w", padx=5, pady=3)
         print("Darf nicht leer sein")
@@ -172,6 +175,7 @@ def savevoc(root, event=None):
     e1.delete(0, "end")
     e2.delete(0, "end")
     e1.focus()
+    root.update()
 
 
 def random_abfrage(root, event=None):
@@ -327,6 +331,48 @@ def show_nothing(label1, label2, label3, label4, root, event=None):
     b2.bind("<Return>", partial(show_all, root))
     b2.grid(row=4, column=1, sticky="w", padx=5, pady=3)
 
+
+def delete_entrys_window(root, event=None):
+    delete = tk.Tk()
+    delete.title("Delete Vocs")
+    delete.focus_force()
+    tk.Label(delete, text="Deutsch:").grid(row=0, column=0, sticky="w", padx=5, pady=3)
+    tk.Label(delete, text="English:").grid(row=0, column=1, sticky="e", padx=5, pady=3)
+    print("1")
+    efile = open(directory + "\\English.txt", "r+")
+    print("2")
+    dfile = open(directory + "\\Deutsch.txt", "r+")
+    print("3")
+    x = 1
+    print(x)
+    for line in efile:
+        print(x)
+        tk.Label(delete, text=line.rstrip()).grid(row=x, column=1)
+        delete.update()
+        bn = tk.Button(delete, text="Delete", command=partial(delete_entrys, x))
+        bn.bind("<Return>", partial(delete_entrys, x))
+        bn.grid(row=x, column=2, sticky="w", padx=5, pady=3)
+        x += 1
+    x = 1
+    for line in dfile:
+        tk.Label(delete, text=line.rstrip()).grid(row=x, column=0)
+        x += 1
+    efile.close()
+    dfile.close()
+    root.update()
+    delete.update()
+    delete.mainloop()
+    root.focus_force()
+    e1.focus()
+
+
+def delete_entrys(x, event=None):
+    efile = open(directory + "\\English.txt", "w+")
+    dfile = open(directory + "\\Deutsch.txt", "w+")
+    efile.read()
+    dfile.read()
+    print(efile)
+    print(dfile)
 
 def quit_window(root, event=None):
     root.quit()
