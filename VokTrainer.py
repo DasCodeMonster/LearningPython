@@ -4,6 +4,7 @@ import tkinter.filedialog as tkf
 from functools import partial
 import time
 import random
+import io
 
 directory = None
 chosen = None
@@ -14,13 +15,15 @@ vardirectory = None
 l1 = None
 e1 = None
 e2 = None
-deutsch = None
+vocs = None
 english = None
 rd = []
 re = []
 rda = []
 rea = []
 
+def help():
+    print("help")
 
 def ask_window():
     ask = tk.Tk()
@@ -46,35 +49,39 @@ def askdir(ask, event=None):
 
 
 def init_liste():
-    fd = open(directory + "\\Deutsch.txt", "r")
+    try:
+        f = open(directory + "\\vocs.txt", "r")
+    except FileNotFoundError:
+        f = open(directory + "\\vocs.txt", "w+")
     global rd
     global rda
-    rda = []
-    rd = []
-    for line in fd:
-        rd.append(line.rstrip())
-        rda.append(line.rstrip())
-    fe = open(directory + "\\English.txt", "r")
     global re
     global rea
+    rda = []
+    rd = []
     re = []
     rea = []
-    for line in fe:
-        re.append(line.rstrip())
-        rea.append(line.rstrip())
-    fd.close()
-    fe.close()
+    for line in f:
+        rd.append(line.rstrip().split(';')[0])
+        re.append(line.rstrip().split(';')[1])
+    f.close()
 
 
 def app():
     root = tk.Tk()
-    root.focus_force()
     root.title("Vokabeltrainer")
+    global german
+    global english
+    german = tk.StringVar()
+    english = tk.StringVar()
     menu = tk.Menu(root)
     root.config(menu=menu)
     helpmenu = tk.Menu(menu)
+    windowmenu = tk.Menu(menu)
+    helpmenu.add_command(label="Help", command=help)
+    windowmenu.add_command(label="Test 2", command=help)
     menu.add_cascade(label="Help", menu=helpmenu)
-    # menu.add_cascade(label="Abfrage", menu=helpmenu)
+    menu.add_cascade(label="Test", menu=windowmenu)
     global directory
     global l1
     l1 = tk.Label(root, text="Directory: " + directory)
@@ -90,7 +97,7 @@ def app():
     e2 = tk.Entry(root)
     e1.bind("<Return>", partial(next_box, e2))
     e1.grid(row=2, column=1, sticky="w", padx=5, pady=3)
-    e1.focus()
+    e1.focus_force()
     tk.Label(root, text="English:").grid(row=3, column=0, sticky="e", padx=5, pady=3)
     e2.bind("<Return>", partial(savevoc, root))
     e2.grid(row=3, column=1, sticky="w", padx=5, pady=3)
@@ -134,20 +141,26 @@ def change_directory(root, event=None):
 
 
 def savevoc(root, event=None):
-    while True:
-        try:
-            efile = open(directory + "\\Deutsch.txt", "a")
-            break
-        except Exception:
-            open(directory + "\\Deutsch.txt", "w")
-            continue
-    while True:
-        try:
-            dfile = open(directory + "\\English.txt", "a")
-            break
-        except Exception:
-            open(directory + "\\English.txt", "w")
-            continue
+    vocs = io.StringIO()
+    try:
+        with open(directory + "\\vocs.txt", "r") as f:
+            vocs.write(f.read() + '\n')
+    except FileNotFoundError:
+        pass
+#     while True:
+#         try:
+#             efile = open(directory + "\\Deutsch.txt", "a")
+#             break
+#         except Exception:
+#             open(directory + "\\Deutsch.txt", "w")
+#             continue
+#     while True:
+#         try:
+#             dfile = open(directory + "\\English.txt", "a")
+#             break
+#         except Exception:
+#             open(directory + "\\English.txt", "w")
+#             continue
     global e1
     global e2
     if e1.get() == "":
@@ -155,26 +168,33 @@ def savevoc(root, event=None):
         # e1.destroy()
         # e1 = tk.Entry(root)
         e1.insert(0, "Darf nicht leer sein!")
-        e1.grid(row=2, column=1, sticky="w", padx=5, pady=3)
+#         e1.grid(row=2, column=1, sticky="w", padx=5, pady=3)
     if e2.get() == "":
         # e2.destroy()
         # e2 = tk.Entry(root)
         e2.insert(0, "Darf nicht leer sein!")
-        e2.grid(row=3, column=1, sticky="w", padx=5, pady=3)
+#         e2.grid(row=3, column=1, sticky="w", padx=5, pady=3)
         print("Darf nicht leer sein")
     if e1.get() == "Darf nicht leer sein!" or e2.get() == "Darf nicht leer sein!":
         pass
     else:
-        efile.write(e1.get() + "\n")
+        print(e1.get() + ';' + e2.get(), file=vocs)
+        print(repr(vocs.getvalue().strip()))
+        with open(directory + "\\vocs.txt", "w") as f:
+            f.write(vocs.getvalue().strip())
+#         with open("Test.txt", 'w') as f:
+#             f.write(vocs.getvalue().rstrip())
+#         efile.write(e1.get() + "\n")
         print("Saved german Voc")
-        dfile.write(e2.get() + "\n")
+#         dfile.write(e2.get() + "\n")
         print("Saved english Voc")
-    efile.close()
-    dfile.close()
+        e1.delete(0, "end")
+        e2.delete(0, "end")
+#     efile.close()
+#     dfile.close()
     init_liste()
-    e1.delete(0, "end")
-    e2.delete(0, "end")
     e1.focus()
+    update()
     root.update()
 
 
@@ -189,14 +209,14 @@ def random_abfrage(root, event=None):
     x = random.randint(1, 2)
     print(x)
     global rd
-    deutsch = tk.StringVar()
+    vocs = tk.StringVar()
     xd = random.randint(0, len(rd) - 1)
-    deutsch.set(rd[xd])
+    vocs.set(rd[xd])
     global re
     english = tk.StringVar()
     xe = random.randint(0, len(re) - 1)
     english.set(re[xe])
-    abfragel4 = tk.Label(root, textvariable=deutsch)
+    abfragel4 = tk.Label(root, textvariable=vocs)
     abfragel5 = tk.Label(root, textvariable=english)
     global correct_answer
     correct_answer = tk.StringVar()
@@ -298,14 +318,21 @@ def hide_abfrage(label1, label2, label3, label4, label5, entry1, entry2, root, e
     b3.bind("<Return>", partial(random_abfrage, root))
     b3.grid(row=4, column=0, sticky="e", padx=5, pady=3)
 
-
+def update():
+    showvocs = open(directory + "\\vocs.txt")
+    deutsch, englisch = [], []
+    for line in showvocs:
+        deutsch.append(line.rstrip().split(';')[0])
+        englisch.append(line.rstrip().split(';')[1])
+    
+#     showenglish = open(directory + "\\English.txt")
+    german.set("\n".join(deutsch))
+    english.set("\n".join(englisch))
+    
 def show_all(root, event=None):
-    german = tk.StringVar()
-    english = tk.StringVar()
-    showgerman = open(directory + "\\Deutsch.txt")
-    showenglish = open(directory + "\\English.txt")
-    german.set(showgerman.read())
-    english.set(showenglish.read())
+    global german
+    global english
+    update()
     showl1 = tk.Label(root, text="Deutsch:")
     showl1.grid(row=5, column=0, sticky="w", padx=5, pady=3)
     showl2 = tk.Label(root, textvariable=german)
@@ -333,20 +360,15 @@ def show_nothing(label1, label2, label3, label4, root, event=None):
 
 
 def delete_entrys_window(root, event=None):
-    delete = tk.Tk()
+    delete = tk.Toplevel()
     delete.title("Delete Vocs")
     delete.focus_force()
     tk.Label(delete, text="Deutsch:").grid(row=0, column=0, sticky="w", padx=5, pady=3)
     tk.Label(delete, text="English:").grid(row=0, column=1, sticky="e", padx=5, pady=3)
-    print("1")
-    efile = open(directory + "\\English.txt", "r+")
-    print("2")
-    dfile = open(directory + "\\Deutsch.txt", "r+")
-    print("3")
+    efile = open(directory + "/English.txt", "r+")
+    dfile = open(directory + "/Deutsch.txt", "r+")
     x = 1
-    print(x)
     for line in efile:
-        print(x)
         tk.Label(delete, text=line.rstrip()).grid(row=x, column=1)
         delete.update()
         bn = tk.Button(delete, text="Delete", command=partial(delete_entrys, x))
@@ -369,10 +391,9 @@ def delete_entrys_window(root, event=None):
 def delete_entrys(x, event=None):
     efile = open(directory + "\\English.txt", "w+")
     dfile = open(directory + "\\Deutsch.txt", "w+")
-    efile.read()
-    dfile.read()
-    print(efile)
-    print(dfile)
+    print(efile.read())
+    print(dfile.read())
+
 
 def quit_window(root, event=None):
     root.quit()
