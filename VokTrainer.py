@@ -21,6 +21,7 @@ rd = []
 re = []
 rda = []
 rea = []
+path = ""
 
 def help():
     print("help")
@@ -78,10 +79,13 @@ def app():
     root.config(menu=menu)
     helpmenu = tk.Menu(menu)
     windowmenu = tk.Menu(menu)
+    bearbeiten = tk.Menu(menu)
+    bearbeiten.add_command(label="Einträge bearbeiten", command=partial(delete_entrys_window, root))
     helpmenu.add_command(label="Help", command=help)
     windowmenu.add_command(label="Test 2", command=help)
     menu.add_cascade(label="Help", menu=helpmenu)
     menu.add_cascade(label="Test", menu=windowmenu)
+    menu.add_cascade(label="Bearbeiten", menu=bearbeiten)
     global directory
     global l1
     l1 = tk.Label(root, text="Directory: " + directory)
@@ -117,12 +121,13 @@ def app():
     b4.grid(row=4, column=0, sticky="w", padx=5, pady=3)
     b5 = tk.Button(root, text="Delete Entrys", command=partial(delete_entrys_window, root))
     b5.bind("<Return>", partial(delete_entrys_window, root))
-    b5.grid(row=4, column=2, sticky="w", padx=5, pady=3)
+    # b5.grid(row=4, column=2, sticky="w", padx=5, pady=3)
     root.mainloop()
 
 
 def next_box(e2, event=None):
     e2.focus()
+
 
 def change_directory(root, event=None):
     global l1
@@ -131,13 +136,12 @@ def change_directory(root, event=None):
     tempdirectory = tkf.askdirectory()
     if tempdirectory != "":
         directory = tempdirectory
+        open("CONFIG.config", "w").write("PATH=" + directory)
     print(directory)
     print(tempdirectory)
     l1 = tk.Label(root, text="Directory: " + directory)
     l1.grid(row=0, column=0, columnspan=2, sticky="w", padx=5, pady=3)
     init_liste()
-
-    # root.update()
 
 
 def savevoc(root, event=None):
@@ -399,13 +403,38 @@ def quit_window(root, event=None):
     root.quit()
 
 
+def path_is(event=None):
+    global path
+    path = tkf.askdirectory()
+    install.destroy()
+
+
 if __name__ == "__main__":
     try:
-        ask_window()
-        print(chosen)
-        if chosen is False:
-            pass
-        elif chosen is True:
-            app()
-    except NameError:
-        pass
+        path = open("CONFIG.config", "r")
+        directory = path.read().rstrip().split("=")[1]
+    except FileNotFoundError:
+        install = tk.Tk()
+        install.title("Install VokTrainer")
+        tk.Label(text="Choose a Path").grid()
+        b = tk.Button(text="OK", command=path_is)
+        b.bind("<Return>", path_is)
+        b.grid()
+        install.mainloop()
+        if path is not "":
+            config = open("CONFIG.config", "w")
+            config.write("PATH=" + path)
+            config.close()
+            config = open("CONFIG.config", "r")
+            directory = config.read().rstrip().split("=")[1]
+    print(directory)
+    # try:
+    #     ask_window()
+    #     print(chosen)
+    #     if chosen is False:
+    #         pass
+    #     elif chosen is True:
+    #         app()
+    # except NameError:
+    #     pass
+    app()
